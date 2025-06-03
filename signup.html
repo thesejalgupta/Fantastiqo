@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Fantastiqo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Your existing CSS remains unchanged */
+        :root {
+            --primary-blue: #007BFF;
+            --secondary-yellow: #FFC107;
+            --dark-blue: #005566;
+            --light-blue: #E6F0FA;
+            --white: #FFFFFF;
+            --dark-bg: #1A202C;
+            --dark-card: #2D3748;
+            --dark-text: #E2E8F0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-blue);
+            color: var(--dark-blue);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .signup-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        body.dark-mode .signup-card {
+            background-color: var(--dark-card);
+        }
+
+        .signup-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .signup-card h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .signup-card h2 {
+            color: var(--dark-text);
+        }
+
+        .signup-card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--dark-blue);
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            color: var(--dark-blue);
+            background-color: var(--white);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        body.dark-mode .form-group input, body.dark-mode .form-group select {
+            background-color: var(--dark-card);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background-color: #0056B3;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .login-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .login-link a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: var(--dark-card);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+        }
+
+        body.dark-mode .modal-header h3 {
+            color: var(--dark-text);
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .modal-close:hover {
+            color: var(--dark-blue);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Notifications */
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            z-index: 900;
+            transform: translateX(100%);
+            transition: transform 0.5s ease;
+        }
+
+        body.dark-mode .notifications {
+            background-color: var(--dark-card);
+        }
+
+        .notifications.active {
+            transform: translateX(0);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notification-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        body.dark-mode .notification-header h3 {
+            color: var(--dark-text);
+        }
+
+        .close-notifications {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .close-notifications:hover {
+            color: var(--dark-blue);
+        }
+
+        .notification-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--light-blue);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .notification-item {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+        }
+
+        .notification-item i {
+            color: var(--primary-blue);
+            margin-right: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .signup-card {
+                padding: 20px;
+            }
+
+            .notifications {
+                width: 100%;
+                right: 0;
+                top: auto;
+                bottom: 0;
+                border-radius: 10px 10px 0 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .signup-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .signup-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-card" id="signup-card">
+            <h2>Sign Up for Fantastiqo</h2>
+            <p>Create an account to access your dashboard</p>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="user-type">User Type</label>
+                    <select id="user-type" required>
+                        <option value="" disabled selected>Select user type</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="action-btn">Sign Up</button>
+                </div>
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="login.html">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notifications" id="notifications">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <span class="close-notifications" id="close-notifications">×</span>
+        </div>
+        <div class="notification-content" id="notification-content"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="quick-action-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Sign Up</h3>
+                <span class="modal-close" id="modal-close">×</span>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Are you sure you want to create this account?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="modal-confirm">Confirm</button>
+                <button class="action-btn" id="modal-cancel" style="background-color: #666;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const signupCard = document.getElementById('signup-card');
+        const signupForm = document.getElementById('signup-form');
+        const notifications = document.getElementById('notifications');
+        const notificationContent = document.getElementById('notification-content');
+        const closeNotifications = document.getElementById('close-notifications');
+        const modal = document.getElementById('quick-action-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalClose = document.getElementById('modal-close');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const modalCancel = document.getElementById('modal-cancel');
+
+        // Notifications array
+        let notificationsList = [
+            { id: 1, message: "Welcome to Fantastiqo!", icon: "fas fa-info-circle" }
+        ];
+
+        // Render Notifications
+        function renderNotifications() {
+            notificationContent.innerHTML = '';
+            notificationsList.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.classList.add('notification-item');
+                notificationItem.innerHTML = `
+                    <i class="${notification.icon}"></i> ${notification.message}
+                `;
+                notificationContent.appendChild(notificationItem);
+            });
+            notifications.classList.add('active');
+        }
+
+        // Add Notification
+        function addNotification(message, icon) {
+            const newNotification = {
+                id: notificationsList.length + 1,
+                message,
+                icon
+            };
+            notificationsList.push(newNotification);
+            renderNotifications();
+        }
+
+        // Form Validation
+        function validateForm(data) {
+            if (!data.userType) {
+                return "Please select a user type";
+            }
+            if (!data.name || data.name.length < 2) {
+                return "Name must be at least 2 characters";
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+                return "Invalid email format";
+            }
+            if (data.password.length < 8) {
+                return "Password must be at least 8 characters";
+            }
+            return null;
+        }
+
+        // Map frontend user types to backend roles
+        function mapUserTypeToRole(userType) {
+            switch (userType) {
+                case 'student':
+                    return 'learner';
+                case 'teacher':
+                    return 'instructor';
+                case 'admin':
+                    return 'admin';
+                default:
+                    return null;
+            }
+        }
+
+        // Handle Signup
+        let formData = null;
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            formData = {
+                userType: document.getElementById('user-type').value,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            const error = validateForm(formData);
+            if (error) {
+                addNotification(error, "fas fa-exclamation-circle");
+                return;
+            }
+
+            modalMessage.textContent = `Create a ${formData.userType} account for ${formData.name}?`;
+            modal.classList.add('active');
+        });
+
+        // Modal Event Listeners
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modalCancel.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modalConfirm.addEventListener('click', async () => {
+            modal.classList.remove('active');
+            try {
+                const role = mapUserTypeToRole(formData.userType);
+                if (!role) throw new Error('Invalid user type');
+
+                // Call backend register API
+                const response = await fetch('http://localhost:5000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password,
+                        name: formData.name,
+                        role
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Registration failed');
+                }
+
+                const data = await response.json();
+                addNotification(data.message, "fas fa-check-circle");
+
+                // Redirect to login page
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } catch (error) {
+                addNotification(error.message, "fas fa-exclamation-circle");
+            }
+        });
+
+        // Close Notifications
+        closeNotifications.addEventListener('click', () => {
+            notifications.classList.remove('active');
+        });
+
+        // Initialize
+        renderNotifications();
+        setTimeout(() => {
+            signupCard.classList.add('visible');
+        }, 100);
+    </script>
+</body>
+</html>

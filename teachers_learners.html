@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learners | Fantastiqo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reusing dashboard CSS for consistency */
+        :root {
+            --primary-blue: #007BFF;
+            --secondary-yellow: #FFC107;
+            --dark-blue: #005566;
+            --light-blue: #E6F0FA;
+            --white: #FFFFFF;
+            --dark-bg: #1A202C;
+            --dark-card: #2D3748;
+            --dark-text: #E2E8F0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            --sidebar-width: 300px;
+            --sidebar-collapsed-width: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-blue);
+            color: var(--dark-blue);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        body.dark-mode .sidebar, body.dark-mode .top-bar, body.dark-mode .stat-card, 
+        body.dark-mode .management-card, body.dark-mode .notifications, body.dark-mode .modal {
+            background-color: var(--dark-card);
+        }
+
+        body.dark-mode .sidebar-nav ul li a:hover, body.dark-mode .sidebar-nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--white);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .sidebar-header .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .sidebar-header .logo span {
+            color: var(--secondary-yellow);
+        }
+
+        .sidebar-header .toggle-btn {
+            font-size: 1.4rem;
+            color: var(--dark-blue);
+            cursor: pointer;
+            margin-left: auto;
+            transition: var(--transition);
+        }
+
+        .sidebar-header .toggle-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav ul li {
+            position: relative;
+        }
+
+        .sidebar-nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sidebar-nav ul li a i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav ul li a:hover, .sidebar-nav ul li a.active {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+
+        body.dark-mode .sidebar-nav ul li a {
+            color: var(--dark-text);
+        }
+
+        .sidebar-nav ul li a .tooltip {
+            position: absolute;
+            left: calc(var(--sidebar-collapsed-width) + 10px);
+            background-color: var(--dark-blue);
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .sidebar.collapsed .sidebar-nav ul li a .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-nav ul li a:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar.collapsed .sidebar-nav ul li a span {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-header .logo h1 {
+            display: none;
+        }
+
+        .sidebar-nav ul li a .pin-btn {
+            position: absolute;
+            right: 20px;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-nav ul li a:hover .pin-btn, .sidebar-nav ul li a.pinned .pin-btn {
+            opacity: 1;
+        }
+
+        .sidebar-nav ul li a.pinned .pin-btn {
+            color: var(--secondary-yellow);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .main-content.collapsed {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .top-bar .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--light-blue);
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            width: 300px;
+            transition: var(--transition);
+        }
+
+        .top-bar .search-bar:hover {
+            transform: scale(1.02);
+        }
+
+        .top-bar .search-bar i {
+            color: var(--dark-blue);
+            margin-right: 10px;
+        }
+
+        .top-bar .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 0.95rem;
+            color: var(--dark-blue);
+            width: 100%;
+        }
+
+        .top-bar .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--dark-blue);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(360deg);
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .profile-dropdown span {
+            font-weight: 500;
+            color: var(--dark-blue);
+        }
+
+        body.dark-mode .profile-dropdown span {
+            color: var(--dark-text);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 200px;
+            z-index: 100;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: var(--dark-blue);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Learners Section */
+        .action-bar {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .learners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .management-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .management-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            height: 180px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .management-card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .management-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-overlay .quick-action {
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            background-color: var(--primary-blue);
+            border-radius: 5px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .card-overlay .quick-action:hover {
+            background-color: #0056B3;
+            transform: scale(1.1);
+        }
+
+        .card-details {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 12px;
+        }
+
+        body.dark-mode .card-title {
+            color: var(--dark-text);
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .card-meta {
+            color: #A0AEC0;
+        }
+
+        .action-btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background-color: #0056B3;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .modal-close:hover {
+            color: var(--dark-blue);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-blue);
+        }
+
+        .modal-body input, .modal-body select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .modal-body label {
+            color: var(--dark-text);
+        }
+
+        body.dark-mode .modal-body input, body.dark-mode .modal-body select {
+            background-color: var(--dark-card);
+            color: var(--dark-text);
+            border-color: #555;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            .sidebar.collapsed {
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+
+            .main-content.collapsed {
+                margin-left: var(--sidebar-width);
+            }
+
+            .sidebar-header .logo h1, .sidebar-nav ul li a span {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-header .logo h1, .sidebar.collapsed .sidebar-nav ul li a span {
+                display: inline;
+            }
+
+            .top-bar .search-bar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .learners-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar .search-bar {
+                width: 100%;
+            }
+
+            .action-bar {
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .management-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .management-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="/api/placeholder/120/50" alt="Fantastiqo Logo">
+                <h1>Fantas<span>tiqo</span></h1>
+            </div>
+            <i class="fas fa-bars toggle-btn" id="sidebar-toggle"></i>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="teacher_dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span><span class="tooltip">Dashboard</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="activities.html"><i class="fas fa-tasks"></i><span>Activities</span><span class="tooltip">Activities</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="courses.html"><i class="fas fa-book"></i><span>Courses</span><span class="tooltip">Courses</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="schedule.html"><i class="fas fa-calendar-alt"></i><span>Schedule</span><span class="tooltip">Schedule</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="teachers_learners.html" class="active"><i class="fas fa-graduation-cap"></i><span>Learners</span><span class="tooltip">Learners</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="teachers_analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span><span class="tooltip">Analytics</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+                <li><a href="teachers_settings.html"><i class="fas fa-cog"></i><span>Settings</span><span class="tooltip">Settings</span><i class="fas fa-thumbtack pin-btn"></i></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search learners..." id="learner-search">
+            </div>
+            <div class="controls">
+                <i class="fas fa-moon theme-toggle" id="theme-toggle"></i>
+                <div class="user-profile">
+                    <div class="profile-dropdown" id="profile-dropdown">
+                        <img src="/api/placeholder/40/40" alt="Teacher Avatar">
+                        <span id="user-name">Teacher</span>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="#">Profile</a>
+                        <a href="#">Settings</a>
+                        <a href="#" id="logout">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learners Section -->
+        <section class="dashboard-section learners">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Manage Learners</h2>
+                </div>
+                <div class="action-bar">
+                    <button class="action-btn" id="add-learner-btn">Add New Learner</button>
+                </div>
+                <div class="learners-grid" id="learners-grid"></div>
+            </div>
+        </section>
+
+        <!-- Add Learner Modal -->
+        <div class="modal" id="add-learner-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Learner</h3>
+                    <span class="modal-close" id="modal-close">×</span>
+                </div>
+                <div class="modal-body">
+                    <form id="add-learner-form">
+                        <label for="learner-name">Name:</label>
+                        <input type="text" id="learner-name" required>
+                        <label for="learner-email">Email:</label>
+                        <input type="email" id="learner-email" required>
+                        <label for="learner-course">Course:</label>
+                        <select id="learner-course" required>
+                            <option value="">Select Course</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn" id="modal-confirm">Add Learner</button>
+                    <button class="action-btn" id="modal-cancel" style="background-color: #666;">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Profile Modal -->
+        <div class="modal" id="view-profile-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Learner Profile</h3>
+                    <span class="modal-close" id="profile-modal-close">×</span>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> <span id="profile-name"></span></p>
+                    <p><strong>Email:</strong> <span id="profile-email"></span></p>
+                    <p><strong>Course:</strong> <span id="profile-course"></span></p>
+                    <p><strong>Progress:</strong> <span id="profile-progress"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn" id="profile-modal-close-btn" style="background-color: #666;">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Send Message Modal -->
+        <div class="modal" id="send-message-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Send Message</h3>
+                    <span class="modal-close" id="message-modal-close">×</span>
+                </div>
+                <div class="modal-body">
+                    <form id="send-message-form">
+                        <label for="message-recipient">To:</label>
+                        <input type="text" id="message-recipient" readonly>
+                        <label for="message-content">Message:</label>
+                        <textarea id="message-content" rows="4" required></textarea>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn" id="message-modal-confirm">Send</button>
+                    <button class="action-btn" id="message-modal-cancel" style="background-color: #666;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated learner data
+        const learners = [
+            { id: 1, name: "John Doe", email: "john.doe@example.com", course: "Mathematics", progress: "75%" },
+            { id: 2, name: "Jane Smith", email: "jane.smith@example.com", course: "Physics", progress: "60%" },
+            { id: 3, name: "Alice Johnson", email: "alice.j@example.com", course: "Chemistry", progress: "85%" }
+        ];
+
+        const courses = ["Mathematics", "Physics", "Chemistry"];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const themeToggle = document.getElementById('theme-toggle');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const learnersGrid = document.getElementById('learners-grid');
+        const addLearnerBtn = document.getElementById('add-learner-btn');
+        const addLearnerModal = document.getElementById('add-learner-modal');
+        const modalClose = document.getElementById('modal-close');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const modalCancel = document.getElementById('modal-cancel');
+        const learnerSearch = document.getElementById('learner-search');
+        const learnerCourseSelect = document.getElementById('learner-course');
+        const viewProfileModal = document.getElementById('view-profile-modal');
+        const profileModalClose = document.getElementById('profile-modal-close');
+        const profileModalCloseBtn = document.getElementById('profile-modal-close-btn');
+        const sendMessageModal = document.getElementById('send-message-modal');
+        const messageModalClose = document.getElementById('message-modal-close');
+        const messageModalConfirm = document.getElementById('message-modal-confirm');
+        const messageModalCancel = document.getElementById('message-modal-cancel');
+
+        // Initialize Learners
+        function initLearners() {
+            renderLearners(learners);
+            populateCourses();
+        }
+
+        // Render Learners
+        function renderLearners(learnersList) {
+            learnersGrid.innerHTML = '';
+            learnersList.forEach(learner => {
+                const learnerCard = document.createElement('div');
+                learnerCard.classList.add('management-card');
+                learnerCard.innerHTML = `
+                    <div class="card-image">
+                        <img src="/api/placeholder/320/180" alt="${learner.name}">
+                        <div class="card-overlay">
+                            <a href="#" class="quick-action" data-action="View Profile" data-id="${learner.id}">View Profile</a>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <h3 class="card-title">${learner.name}</h3>
+                        <div class="card-meta">
+                            <span>Email: ${learner.email}</span>
+                            <span>Course: ${learner.course}</span>
+                            <span>Progress: ${learner.progress}</span>
+                        </div>
+                        <a href="#" class="action-btn" data-action="Message" data-id="${learner.id}">Send Message</a>
+                    </div>
+                `;
+                learnersGrid.appendChild(learnerCard);
+                setTimeout(() => {
+                    learnerCard.classList.add('visible');
+                }, 100);
+            });
+
+            // Add quick action listeners
+            document.querySelectorAll('.quick-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const learnerId = btn.dataset.id;
+                    const learner = learners.find(l => l.id == learnerId);
+                    if (learner) {
+                        document.getElementById('profile-name').textContent = learner.name;
+                        document.getElementById('profile-email').textContent = learner.email;
+                        document.getElementById('profile-course').textContent = learner.course;
+                        document.getElementById('profile-progress').textContent = learner.progress;
+                        viewProfileModal.classList.add('active');
+                    }
+                });
+            });
+
+            // Add message action listeners
+            document.querySelectorAll('.action-btn[data-action="Message"]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const learnerId = btn.dataset.id;
+                    const learner = learners.find(l => l.id == learnerId);
+                    if (learner) {
+                        document.getElementById('message-recipient').value = learner.name;
+                        document.getElementById('message-content').value = '';
+                        sendMessageModal.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Populate Course Dropdown
+        function populateCourses() {
+            learnerCourseSelect.innerHTML = '<option value="">Select Course</option>';
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                learnerCourseSelect.appendChild(option);
+            });
+        }
+
+        // Search Learners
+        learnerSearch.addEventListener('input', () => {
+            const query = learnerSearch.value.toLowerCase();
+            const filteredLearners = learners.filter(learner =>
+                learner.name.toLowerCase().includes(query) ||
+                learner.email.toLowerCase().includes(query) ||
+                learner.course.toLowerCase().includes(query)
+            );
+            renderLearners(filteredLearners);
+        });
+
+        // Event Listeners
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+            sidebarToggle.classList.toggle('fa-bars');
+            sidebarToggle.classList.toggle('fa-times');
+        });
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.classList.toggle('fa-moon');
+            themeToggle.classList.toggle('fa-sun');
+        });
+
+        profileDropdown.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('active');
+        });
+
+        document.getElementById('logout').addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+
+        addLearnerBtn.addEventListener('click', () => {
+            addLearnerModal.classList.add('active');
+        });
+
+        modalClose.addEventListener('click', () => {
+            addLearnerModal.classList.remove('active');
+        });
+
+        modalCancel.addEventListener('click', () => {
+            addLearnerModal.classList.remove('active');
+        });
+
+        modalConfirm.addEventListener('click', () => {
+            const name = document.getElementById('learner-name').value;
+            const email = document.getElementById('learner-email').value;
+            const course = document.getElementById('learner-course').value;
+            if (name && email && course) {
+                learners.push({
+                    id: learners.length + 1,
+                    name,
+                    email,
+                    course,
+                    progress: "0%"
+                });
+                renderLearners(learners);
+                addLearnerModal.classList.remove('active');
+                document.getElementById('add-learner-form').reset();
+                const notification = document.createElement('div');
+                notification.classList.add('notification-item');
+                notification.innerHTML = `<i class="fas fa-user-plus"></i> Added learner: ${name}`;
+                document.getElementById('notification-content')?.appendChild(notification);
+            } else {
+                alert('Please fill all fields.');
+            }
+        });
+
+        profileModalClose.addEventListener('click', () => {
+            viewProfileModal.classList.remove('active');
+        });
+
+        profileModalCloseBtn.addEventListener('click', () => {
+            viewProfileModal.classList.remove('active');
+        });
+
+        messageModalClose.addEventListener('click', () => {
+            sendMessageModal.classList.remove('active');
+        });
+
+        messageModalCancel.addEventListener('click', () => {
+            sendMessageModal.classList.remove('active');
+        });
+
+        messageModalConfirm.addEventListener('click', () => {
+            const recipient = document.getElementById('message-recipient').value;
+            const content = document.getElementById('message-content').value;
+            if (content) {
+                alert(`Message sent to ${recipient}: ${content}`);
+                sendMessageModal.classList.remove('active');
+                document.getElementById('send-message-form').reset();
+                const notification = document.createElement('div');
+                notification.classList.add('notification-item');
+                notification.innerHTML = `<i class="fas fa-envelope"></i> Message sent to ${recipient}`;
+                document.getElementById('notification-content')?.appendChild(notification);
+            } else {
+                alert('Please enter a message.');
+            }
+        });
+
+        // Pin Sidebar Items
+        document.querySelectorAll('.pin-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const parentLink = btn.parentElement;
+                parentLink.classList.toggle('pinned');
+            });
+        });
+
+        // Initialize
+        initLearners();
+    </script>
+</body>
+</html>
